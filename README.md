@@ -347,3 +347,63 @@ To go to the "next" kernel level:
 ```
 sudo BRANCH=next rpi-update
 ```
+
+Display-o-tron 3000
+-------------------
+
+Python 2.x
+
+```
+sudo apt-get install python-dev python-pip python-smbus
+sudo pip install sn3218 st7036
+```
+
+Python 3.x
+
+```
+sudo apt-get install python3-dev python3-pip
+sudo pip-3.2 install sn3218 st7036
+```
+
+Python3 smbus
+```
+mkdir -p ~/Desktop/code ; cd ~/Desktop/code
+git clone git@github.com:SteveClement/fearMe.git
+mkdir -p ~/Desktop/code/fearMe/Downloads
+cd ~/Desktop/code/fearMe/Downloads
+wget -c http://ftp.de.debian.org/debian/pool/main/i/i2c-tools/i2c-tools_3.1.0.orig.tar.bz2
+tar xf i2c-tools_3.1.0.orig.tar.bz2
+cd i2c-tools-3.1.0/py-smbus
+cp smbusmodule.c smbusmodule.c.orig
+cat ~/Desktop/code/fearMe/Patches/smbusmodule.c.diff | patch
+wget -c http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-2.10.8.tar.gz
+tar xfz lm_sensors-2.10.8.tar.gz
+cp lm_sensors-2.10.8/kernel/include/i2c-dev.h .
+rm -r lm_sensors-2.10.8*
+python3 setup.py build
+sudo python3 setup.py install
+sudo pip-3.2 install dot3k
+```
+
+Build and Install
+-----------------
+
+```
+cd ~/Desktop/code
+git clone https://github.com/pimoroni/dot3k
+cd ~/Desktop/code/dot3k/python/library
+python ./setup.py build
+sudo python ./setup.py install
+sudo python ./setup.py clean
+python3 ./setup.py build
+sudo python3 ./setup.py install
+```
+
+Testing
+-------
+
+```
+cd ~/Desktop/code/dot3k/python/examples/basic
+sudo python hellow_world.py
+sudo pip-3.2 install sn3218 st7036
+```
