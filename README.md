@@ -407,3 +407,17 @@ cd ~/Desktop/code/dot3k/python/examples/basic
 sudo python hellow_world.py
 sudo pip-3.2 install sn3218 st7036
 ```
+
+
+crontab
+-------
+
+If you want your script to be run on-boot, in a tmux session. Follow these lines.
+
+Add:
+
+```
+@reboot ~/Desktop/code/raspi-prep/Scripts/myScript_tmux.sh
+```
+
+to your $LUSER crontab this runs given script after a reboot
