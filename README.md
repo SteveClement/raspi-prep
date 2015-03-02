@@ -100,6 +100,7 @@ python3 setup.py build
 sudo python3 setup.py install
 
 make clean
+python setup.py build
 sudo python setup.py install
 ```
 
@@ -143,7 +144,8 @@ sudo modprobe rtc-ds1307
 echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device (rev 2 Pi)
 ```
 
-== Soya 3d and Python3 ==
+Soya 3d and Python3
+-------------------
 
 ```
 sudo apt-get install cython3 libsdl2-dev  libglew-dev libopenal-dev libcal3d12-dev  libsdl2-image-dev libstdc++-4.8-dev python3-cerealizer blender mercurial libvorbis-dev
