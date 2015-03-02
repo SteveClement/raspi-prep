@@ -9,6 +9,35 @@ sudo ntpdate -u ntp.ubuntu.com
 #libunicapgtk2-dev
 ```
 
+wireless
+--------
+
+Remove:
+
+```
+iface wlan0 inet manual
+wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
+```
+
+If you need the iw command to do:
+
+```
+iw scan wlan0
+```
+
+if this command returns 'nl80211 not found.' it means the wifi driver does not support the newer nl80211 api. Which in turn means you need the older hostapd.
+
+Amend:
+
+```
+allow-hotplug wlan0
+auto wlan0
+
+iface wlan0 inet dhcp
+        wpa-ssid "ssid"
+        wpa-psk "password"
+```
+
 pibrella
 --------
 
@@ -18,6 +47,30 @@ sudo apt-get dist-upgrade
 sudo apt-get install vim python3-pip python-pip geany tmux
 sudo pip-3.2 install pibrella
 sudo pip install pibrella
+```
+
+camera module
+-------------
+
+```
+sudo apt-get install vlc-nox
+sudo modprobe bcm2835-v4l2 # add 'bcm2835-v4l2' to /etc/modules
+
+# Very slow:
+cvlc v4l2:///dev/video0 --v4l2-width 1920 --v4l2-height 1080 --v4l2-chroma h264 --sout '#standard{access=http,mux=ts,dst=0.0.0.0:31337}'
+
+# Much better but will show video on framebuffer:
+raspivid -o - -t 0 -hf -w 640 -h 360 -fps 25 | cvlc -vvv stream:///dev/stdin --ut '#standard{access=http,mux=ts,dst=0.0.0.0:31337}' :demux=h264
+# Connect with vlc now to: http://YOUR_IP_GOES_HERE:31337
+
+# rtp foo: #rtp{sdp=rtsp://:8554}
+
+# raspiStill example:
+raspistill -tl 500 -t 999999 -vf -w 960 -h 720 -o /tmp/mjpg/test.jpg -n -q 50&
+
+# mjpg_streamer example
+mjpg_streamer -i 'input_file.so -f /tmp/mjpg -raspistill'
+http://<raspberrypi>:8080/?action=stream
 ```
 
 locale
