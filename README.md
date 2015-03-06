@@ -548,3 +548,103 @@ sudo /etc/init.d/munin-node restart
 ```
 
 (source: https://yeri.be/munin-raspberry-pi-temperature-updated)
+
+bluetooth-le
+------------
+
+```
+sudo apt-get install libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical-dev libreadline-dev wireshark
+```
+
+```
+mkdir -p ~/Desktop/code/bluez
+cd ~/Desktop/code/bluez
+wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.28.tar.xz
+tar xfvJ bluez-5.28.tar.xz
+cd bluez-5.28
+./configure --disable-systemd --datadir=/usr --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-library
+make
+sudo make install
+
+cd ..
+git clone git@github.com:carsonmcdonald/bluez-ibeacon.git
+cd bluez-ibeacon/bluez-beacon
+make
+# test it, with UUID: 34021335-3b49-46ed-b9da-b5f8419171de
+/home/pi/Desktop/code/bluez-ibeacon/bluez-beacon/ibeacon 200 340213353b4946edb9dab5f8419171de 1 1 -29 
+```
+
+ibeacon.sh
+
+```
+#!/bin/bash
+/usr/bin/hciconfig hci0 up
+/usr/bin/hciconfig hci0 leadv 3
+/usr/bin/hciconfig hci0 noscan
+/usr/bin/hcitool -i hci0 cmd 0x08 0x0008 1E 02 01 1A 1A FF 4C 00 02 15 E2 0A 39 F4 73 F5 4B C4 A1 2F 17 D1 AD 07 A9 61 00 00 00 00 C8 00
+export UUID="34 02 13 35 3b 49 46 ed b9 da b5 f8 41 91 71 de"
+/usr/bin/hcitool -i hci0 cmd 0x08 0x0008 1E 02 01 1A 1A FF 4C 00 02 15 ${UUID} 00 00 00 00 C5 00
+#1E 02 01 1A 1A FF 4C 00 02 15 [ 92 77 83 0A B2 EB 49 0F A1 DD 7F E3 8C 49 2E DE ] [ 00 00 ] [ 00 00 ] C5 00
+##/home/pi/bluez/bluez-ibeacon/bluez-beacon/ibeacon 200 e2c56db5dffb48d2b060d0f5a71096e0 1 1 -29
+```
+
+To genereate unique uuid's install the uuid package on debian:
+
+```
+$ sudo apt-get install uuid
+$ uuid
+e8d0ccea-c40c-11e4-a04e-3f235bbf7686
+```
+
+Inside this field, you need the following values:
+ID (uint8_t)               - This will always be 0x02
+Data Length (uint8_t)      - The number of bytes in the rest of the payload = 0x15 (21 in dec)
+128-bit UUID (uint8_t[16]) - The 128-bit ID indentifying your company/store/etc
+Major (uint16_t)           - The major value (to differentiate individual stores, etc.)
+Minor (uint16_t)           - The minor value (to differentiate nodes withing one location, etc.)
+TX Power (uint8_t)         - This value is used to try to estimate distance based on the RSSI value
+
+For example, the following is a valid iBeacon payload (separators added for clarity sake):
+The only other missing piece is that, following the Bluetooth standard, the Manufacturer Specific
+Data needs to be preceded by the Company Identifier (http://adafru.it/cYt). The company identifier
+
+/usr/bin/hcitool -i hci0 cmd 0x08 0x0008 1E 02 01 1A 1A FF 4C 00 02 15 E2 0A 39 F4 73 F5 4B C4 A1 2F 17 D1 AD 07 A9 61 00 00 00 00 C8 00
+
+1E significant octets
+02 1st block of ad data is 2 octets long
+01 advertising octet(s) are BT flags
+1A binary value derived when certain of thos flags are set
+1A next group is 26 octets long
+FF identifies the group as manufacturer-specific data
+4C 00 Apple Manufacturer ID
+02 ???
+15 ???
+[UUID]
+[MAJ]
+[MIN]
+C5 Power
+00 ???
+
+#1E 02 01 1A 1A FF 4C 00 02 15 [ 92 77 83 0A B2 EB 49 0F A1 DD 7F E3 8C 49 2E DE ] [ 00 00 ] [ 00 00 ] C5 00
+
+This is how you decode the command: the "hci0" identifies your Bluetooth dongle, "cmd" tells hcitool to send the following command data to the device. The "0x08" is the Bluetooth command group - the "OGF" in the official parlance - and "0x0008" is the specific command ("OCF"), HCI_LE_Set_Advertising_Data.
+
+The first "1E" is the number of “significant” octets in the advertising data that follow, up to a maximum of 31. The non-significant part should only comprise pairs of zeroes to take the number of octets up to 31 and which, to save power, are not transmitted.
+
+The ad data is split into groups, each formatted with a single octet providing the number of remaining octets in the group - essentially it tells the Bluetooth sub-system how further along the list of octets is the next group. It’s followed by a single octet which defines the type of data, and then any number of octets holding the data itself. You can put as many of these groups into the advertising data packet as you can fit into the 31 octets allowed.
+
+In my example, the first "02" in the sequence says the first block of ad data is two octets long. The next octet, "01" says the advertising octet(s) following are Bluetooth flags, and the "1A" is the binary value derived when certain of those flags are set.
+
+‘1A’ says the next group is 26 octets long, and the "FF" identifies the group as manufacturer-specific data. The Bluetooth 4.0 specification says the next two octets have to expose the manufacturer: the "4C 00" is Apple’s Bluetooth manufacturer ID.
+
+I’m not yet sure what the "02" and "15" signify, but as I say, the Proximity UUID, Major and Minor values, and the power level complete the 26 octets of manufacturer data - and the 30 octets of the entire advertising data.
+
+Increase advertising frequency from 1/second to 10/second
+https://stackoverflow.com/questions/21124993/is-there-a-way-to-increase-ble-advertisement-frequency-in-bluez
+
+Generic Access Profile:
+https://www.bluetooth.org/en-us/specification/assigned-numbers/generic-access-profile
+
+ID | DL | UUID                                            | Minor | Major | TX Power
+02 | 15 | E2 0A 39 F4 73 F5 4B C4 A1 2F 17 D1 AD 07 A9 61 | 00 00 | 00 00 | C8
+
