@@ -267,8 +267,24 @@ iface br0 inet dhcp
         bridge_ports eth0 wlan0
 ```
 
-LE DEbug: sudo hostapd -d /etc/hostapd/hostapd.conf
+This setup can be used to hide private networks. Additional routing (DNAT, SNAT) is requried.
 
+```
+auto brnat
+iface brnat inet static
+  address 10.10.10.254
+  netmask 255.255.255.0
+  bridge_stp off
+  bridge_maxwait 5
+  pre-up  /usr/sbin/brctl addbr brnat
+  post-up /usr/sbin/brctl setfd brnat 0
+  #post-up /sbin/iptables -t nat -A POSTROUTING -o br0 -j MASQUERADE
+  #post-up echo 1 > /proc/sys/net/ipv4/ip_forward
+```
+
+More on bridges: http://www.stefan-seelmann.de/wiki/bridged-network
+
+LE DEbug: sudo hostapd -d /etc/hostapd/hostapd.conf
 
 ```
 sudo apt-get install watchdog
@@ -476,3 +492,59 @@ Add:
 ```
 
 to your $LUSER crontab this runs given script after a reboot
+
+setting hostname
+----------------
+
+```
+sudo vi /etc/hostname /etc/hosts
+sudo /etc/init.d/hostname.sh
+```
+
+munin-node
+----------
+
+```
+sudo apt-get install munin-node
+# change the allow line in munin-node.conf
+sudo vi /etc/munin/munin-node.conf
+
+```
+
+Add temperature to graph:
+
+```
+sudo vi /etc/munin/plugins/temp
+```
+
+```
+#!/bin/sh
+case $1 in
+config)
+cat <<'EOM'
+graph_category system
+graph_title Temperature
+graph_vlabel temp
+temp.label Celsius
+EOM
+exit 0;;
+esac
+echo -n "temp.value "
+/opt/vc/bin/vcgencmd measure_temp | cut -d "=" -f2 | cut -d "'" -f1
+```
+
+```
+sudo chmod +x /etc/munin/plugins/temp
+sudo vi /etc/munin/plugin-conf.d/temp.conf
+```
+
+```
+[temp]
+user root
+```
+
+```
+sudo /etc/init.d/munin-node restart
+```
+
+(source: https://yeri.be/munin-raspberry-pi-temperature-updated)
