@@ -158,11 +158,40 @@ python3 ./setup.py build
 sudo python3 ./setup.py install
 ```
 
-raspi:
+raspi
+-----
 
 ```
 sudo apt-get install cython libsdl1.2-dev  libglew-dev libopenal-dev libcal3d12-dev  libsdl-image1.2-dev libstdc++-4.8-dev python-cerealizer blender mercurial libvorbis-dev
 ```
+
+libsdl2 on raspi
+----------------
+
+Inspired from: https://github.com/petrockblog/RetroPie-Setup/blob/master/scriptmodules/supplementary/sdl2.sh
+
+Get dependencies:
+
+```
+sudo apt-get install debhelper dh-autoreconf libasound2-dev libudev-dev libdbus-1-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxss-dev libxt-dev libxxf86vm-dev libraspberrypi0 libraspberrypi-bin libraspberrypi-dev
+```
+
+```
+cd ~/Desktop/code
+wget -O- -q http://downloads.petrockblock.com/retropiearchives/SDL2-2.0.3.tar.gz | tar -xvz
+    cd SDL2-2.0.3
+cd SDL2-2.0.3/
+# we need to add the --host due to dh_auto_configure fiddling with the --build parameter which overrides the config.guess. This
+# would cause it not to find the pi gles development files
+sed -i 's/--disable-x11-shared/--disable-x11-shared --host=armv6l-raspberry-linux-gnueabihf --disable-video-opengl --enable-video-gles --disable-esd --disable-pulseaudio/' debian/rules
+# remove pulse / libgl1 dependencies
+sed -i '/libpulse-dev,/d' debian/control
+sed -i '/libgl1-mesa-dev,/d' debian/control
+dpkg-buildpackage
+cd ..
+sudo dpkg -i libsdl2_2.0.3_armhf.deb libsdl2-dev_2.0.3_armhf.deb
+```
+
 
 x11vnc
 ------
