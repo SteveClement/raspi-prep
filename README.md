@@ -571,7 +571,10 @@ git clone git@github.com:carsonmcdonald/bluez-ibeacon.git
 cd bluez-ibeacon/bluez-beacon
 make
 # test it, with UUID: 34021335-3b49-46ed-b9da-b5f8419171de
-/home/pi/Desktop/code/bluez-ibeacon/bluez-beacon/ibeacon 200 340213353b4946edb9dab5f8419171de 1 1 -29 
+sudo /usr/bin/hciconfig hci0 up
+sudo /usr/bin/hciconfig hci0 leadv 3
+sudo /usr/bin/hciconfig hci0 noscan
+sudo /home/pi/Desktop/code/bluez/bluez-ibeacon/bluez-beacon/ibeacon 200 340213353b4946edb9dab5f8419171de 1 1 -29 
 ```
 
 ibeacon.sh
