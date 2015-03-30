@@ -148,21 +148,11 @@ Soya 3d and Python3
 -------------------
 
 ```
-sudo apt-get install cython3 libsdl2-dev  libglew-dev libopenal-dev libcal3d12-dev  libsdl2-image-dev libstdc++-4.8-dev python3-cerealizer blender mercurial libvorbis-dev
-sudo apt-get install python3-pip
-sudo pip-3.2 install cython
-mkdir ~/Desktop/code ; cd ~/Desktop/code
-hg clone https://bitbucket.org/jibalamy/soya3
-cd soya3
-python3 ./setup.py build
-sudo python3 ./setup.py install
-```
-
-raspi
------
-
-```
+# Dependencies
 sudo apt-get install cython libsdl1.2-dev  libglew-dev libopenal-dev libcal3d12-dev  libsdl-image1.2-dev libstdc++-4.8-dev python-cerealizer blender mercurial libvorbis-dev
+sudo apt-get install python3-pip
+sudo pip-3.2 install cython cerealizer
+
 ```
 
 libsdl2 on raspi
@@ -173,17 +163,31 @@ Inspired from: https://github.com/petrockblog/RetroPie-Setup/blob/master/scriptm
 Get dependencies:
 
 ```
-sudo apt-get install debhelper dh-autoreconf libasound2-dev libudev-dev libdbus-1-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxss-dev libxt-dev libxxf86vm-dev libraspberrypi0 libraspberrypi-bin libraspberrypi-dev
+sudo apt-get install debhelper dh-autoreconf libasound2-dev libudev-dev libdbus-1-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxss-dev libxt-dev libxxf86vm-dev libraspberrypi0 libraspberrypi-bin libraspberrypi-dev libfluidsynth-dev libfreeimage3 liblzma-dev libraw5 libtiff5 libtiffxx5
 ```
 
 ```
 cd ~/Desktop/code
-wget -O- -q http://downloads.petrockblock.com/retropiearchives/SDL2-2.0.3.tar.gz | tar -xvz
-    cd SDL2-2.0.3
+wget -O- -q https://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-2.0.0.tar.gz |tar -xvz
+wget -O- -q https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.0.tar.gz |tar -xvz
+wget -O- -q https://www.libsdl.org/release/SDL2-2.0.3.tar.gz |tar -xvz
+
+cd SDL2_mixer-2.0.0
+dpkg-buildpackage
+cd ..
+sudo dpkg -i libsdl2-mixer_2.0.0_armhf.deb libsdl2-mixer-dev_2.0.0_armhf.deb
+cd SDL2_image-2.0.0
+dpkg-buildpackage
+cd ..
+sudo dpkg -i libsdl2-image_2.0.0_armhf.deb libsdl2-image-dev_2.0.0_armhf.deb
+cd ..
 cd SDL2-2.0.3/
 # we need to add the --host due to dh_auto_configure fiddling with the --build parameter which overrides the config.guess. This
 # would cause it not to find the pi gles development files
+# Raspberry Pi 1
 sed -i 's/--disable-x11-shared/--disable-x11-shared --host=armv6l-raspberry-linux-gnueabihf --disable-video-opengl --enable-video-gles --disable-esd --disable-pulseaudio/' debian/rules
+# Raspberry Pi 2
+sed -i 's/--disable-x11-shared/--disable-x11-shared --host=armv7l-raspberry-linux-gnueabihf --disable-video-opengl --enable-video-gles --disable-esd --disable-pulseaudio --disable-video-mir --disable-video-wayland --disable-video-x11/' debian/rules
 # remove pulse / libgl1 dependencies
 sed -i '/libpulse-dev,/d' debian/control
 sed -i '/libgl1-mesa-dev,/d' debian/control
@@ -192,6 +196,13 @@ cd ..
 sudo dpkg -i libsdl2_2.0.3_armhf.deb libsdl2-dev_2.0.3_armhf.deb
 ```
 
+```
+mkdir ~/Desktop/code ; cd ~/Desktop/code
+hg clone https://SteveClement@bitbucket.org/SteveClement/soya3
+cd soya3
+python3 ./setup.py build
+sudo python3 ./setup.py install
+```
 
 x11vnc
 ------
