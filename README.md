@@ -187,7 +187,7 @@ cd SDL2-2.0.3/
 # Raspberry Pi 1
 sed -i 's/--disable-x11-shared/--disable-x11-shared --host=armv6l-raspberry-linux-gnueabihf --disable-video-opengl --enable-video-gles --disable-esd --disable-pulseaudio/' debian/rules
 # Raspberry Pi 2
-sed -i 's/--disable-x11-shared/--disable-x11-shared --host=armv7l-raspberry-linux-gnueabihf --disable-video-opengl --enable-video-gles --disable-esd --disable-pulseaudio --disable-video-mir --disable-video-wayland --disable-video-x11/' debian/rules
+sed -i 's/--disable-x11-shared/--disable-x11-shared --host=armv7l-raspberry-linux-gnueabihf --disable-video-opengl --disable-video-gles --disable-esd --disable-pulseaudio --disable-video-mir --disable-video-wayland --disable-video-x11/' debian/rules
 # remove pulse / libgl1 dependencies
 sed -i '/libpulse-dev,/d' debian/control
 sed -i '/libgl1-mesa-dev,/d' debian/control
@@ -483,14 +483,14 @@ git clone git@github.com:SteveClement/fearMe.git
 mkdir -p ~/Desktop/code/fearMe/Downloads
 cd ~/Desktop/code/fearMe/Downloads
 wget -c http://ftp.de.debian.org/debian/pool/main/i/i2c-tools/i2c-tools_3.1.0.orig.tar.bz2
-tar xf i2c-tools_3.1.0.orig.tar.bz2
-cd i2c-tools-3.1.0/py-smbus
+tar xf i2c-tools_3.1.1.orig.tar.bz2
+cd i2c-tools-3.1.1/py-smbus
 cp smbusmodule.c smbusmodule.c.orig
 cat ~/Desktop/code/fearMe/Patches/smbusmodule.c.diff | patch
-wget -c http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-2.10.8.tar.gz
-tar xfz lm_sensors-2.10.8.tar.gz
-cp lm_sensors-2.10.8/kernel/include/i2c-dev.h .
-rm -r lm_sensors-2.10.8*
+wget -c http://github.com/groeck/lm-sensors/archive/V2-10-8.zip
+unzip V2-10-8.zip
+cp lm-sensors-2-10-8/kernel/include/i2c-dev.h .
+rm -r lm-sensors-2-10-8*
 python3 setup.py build
 sudo python3 setup.py install
 sudo pip-3.2 install dot3k
@@ -691,3 +691,6 @@ https://www.bluetooth.org/en-us/specification/assigned-numbers/generic-access-pr
 ID | DL | UUID                                            | Minor | Major | TX Power
 02 | 15 | E2 0A 39 F4 73 F5 4B C4 A1 2F 17 D1 AD 07 A9 61 | 00 00 | 00 00 | C8
 
+
+
+http://www.onenorth.com/blog/post/editing-files-on-raspberry-pi-with-local-sublime
