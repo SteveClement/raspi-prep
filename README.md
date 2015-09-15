@@ -599,9 +599,9 @@ sudo apt-get install libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical
 ```
 mkdir -p ~/Desktop/code/bluez
 cd ~/Desktop/code/bluez
-wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.29.tar.xz
-tar xfvJ bluez-5.29.tar.xz
-cd bluez-5.29a
+wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.34.tar.xz
+tar xfvJ bluez-5.34.tar.xz
+cd bluez-5.34
 ./configure --disable-systemd --datadir=/usr --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-library
 make
 sudo make install
