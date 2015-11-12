@@ -4,7 +4,7 @@ raspi-prep
 All the most common tweaks you want to do on your raspi
 
 ```
-sudo apt-get install vim mercurial python-dev python-numpy python3-dev  python3-numpy libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev libportmidi-dev libavformat-dev libswscale-dev libjpeg-dev libfreetype6-dev htop nginx php5-cgi php5-cli spawn-fcgi daemontools-run vim python3-pip python-pip geany geany-plugin-lua geany-plugin-prettyprinter geany-plugin-latex geany-plugin-spellcheck python-imaging rrdtool curl wget lynx zip unzip unrar-free nmap gnupg rsync rdiff-backup smartmontools tmux libglade2-dev bzr libunicap2-dev intltool libgconf2-dev build-essential ntpdate ca-certificates
+sudo apt-get install etckeeper mercurial python-dev python-numpy python3-dev  python3-numpy libsdl-dev libsdl-image1.2-dev libsdl-mixer1.2-dev libsdl-ttf2.0-dev libsmpeg-dev libportmidi-dev libavformat-dev libswscale-dev libjpeg-dev libfreetype6-dev htop nginx php5-cgi php5-cli spawn-fcgi daemontools-run vim python3-pip python-pip geany geany-plugin-lua geany-plugin-prettyprinter geany-plugin-latex geany-plugin-spellcheck python-imaging rrdtool curl wget lynx zip unzip unrar-free nmap gnupg rsync rdiff-backup smartmontools tmux libglade2-dev bzr libunicap2-dev intltool libgconf2-dev build-essential ntpdate ca-certificates
 sudo ntpdate -u ntp.ubuntu.com
 #libunicapgtk2-dev
 ```
@@ -80,7 +80,8 @@ locale
 locale
 sudo locale-gen en_US en_GB
 sudo vi /etc/default/locale
-add: LC_ALL=en_US.UTF-8
+add: LC_ALL=en_GB.UTF-8
+     LANGUAGE=en_GB.UTF-8
 sudo dpkg-reconfigure locales
 ```
 
