@@ -22,7 +22,7 @@ wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
 If you need the iw command to do:
 
 ```
-iw scan wlan0
+sudo iw wlan0 scan
 ```
 
 if this command returns 'nl80211 not found.' it means the wifi driver does not support the newer nl80211 api. Which in turn means you need the older hostapd.
@@ -600,9 +600,9 @@ sudo apt-get install libusb-dev libdbus-1-dev libglib2.0-dev libudev-dev libical
 ```
 mkdir -p ~/Desktop/code/bluez
 cd ~/Desktop/code/bluez
-wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.34.tar.xz
-tar xfvJ bluez-5.34.tar.xz
-cd bluez-5.34
+wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.38.tar.xz
+tar xfvJ bluez-5.38.tar.xz
+cd bluez-5.38
 ./configure --disable-systemd --datadir=/usr --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-library
 make
 sudo make install
